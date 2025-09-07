@@ -52,6 +52,9 @@ class AppBootHook {
 
     // 注册mqtt的publish事件
     this.agent.messenger.on('mqtt-publish', data => {
+      if (data.message.type === 'Buffer') {
+        data.message = Buffer.from(data.message.data);
+      }
       this.agent.mqtt.publish(data.topic, data.message, data.options, err => {
         this.agent.coreLogger.error('[egg-mqtt-plugin] publish error : %s', err);
         this.agent.messenger.sendTo(data.pid, data.action, err);
